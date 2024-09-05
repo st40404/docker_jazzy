@@ -1,93 +1,142 @@
-# ros2_humble_docker
+# Steps for usage
+<!-- TODO: change to asciidoc -->
+<!-- BUG: container name = image -->
+## English version
+
+1. Install Docker Engine.
+    - [Docker Engine](https://docs.docker.com/engine/install/)
+    - [linux post-installation](https://docs.docker.com/engine/install/linux-postinstall/)
+
+2. Download this github repository.
+
+    ```shell
+    git clone https://github.com/errrr0501/docker_20.04_cuda12_tf1.15
+    ```
+
+3. Copy to your project directory.
+    - `<workspace_path>`: replace with real project folder path.
+
+        ```shell
+        cp -r docker_template <workspace_path>
+        # or
+        cp -r docker_template <workspace_path>/docker
+        ```
+
+    - Example:
+
+        ```shell
+        # ROS format workspace
+        cp -r docker_template ~/test_ws/src
+        ```
+
+4. Adjust Dockerfile to suit your needs
+5. Build Docker image (run `build.sh`).
+    - `<docker_path>` replace with real to docker location.
+
+    ```shell
+    ./<docker_path>/build.sh
+    ```
+
+6. Run Docker container (run `run.sh`).
+    - `<docker_path>` replace with real to docker location.
+
+    ```shell
+    ./<docker_path>/run.sh
+    ```
+
+7. Enjoy Docker support.
+
+### Pay attention to the following points when using
+
+1. Docker image name wil be named based on the follwing order:
+    - Dockerfile name (suffix), ex: **Dockerfile_DuckDuckGo**, the image name will be **DuckDuckGo**.
+    - Workspace folder name (prefix), ex: **Microsoft_ws**, the image name will be **Microsoft**.
+    - If neither exists, the image name will be **unknown**.
+
+2. Docker container name will be named in the format of `<user>/<container>` and named based on the following order:
+    - `<user>`:
+        - Docker login username.
+        - system username.
+        - if neither exists, `<user>` will be named initial.
+    - `<container>`:
+        - Workspace folder name (prefix), ex: **chrome_ws**, the container name will be **chrome**.
+        - Dockerfile name (suffix), ex: **Dockerfile_Firefox**, the container name will be **Firefox**.
+        - If neither exists, the container name will be **unknown**.
 
 
+3. Dockerfile and entrypoint.sh notes:
+    - It is possible to add hardware architecture as a suffix to the file name.
+       - ex: **Dockerfile_x86_64** or **Dockerfile_aarch64**.
+       - ex: **entrypoint_x86_64.sh** or **entrypoint_aarch64.sh**.
+    - If there are multiple Dockerfile or entrypoint.sh file in the docker folder, the script will use the one that matches the current hardware architecture.
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 中文版本
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+1. 安裝 Docker Engine。
+    - [Docker Engine](https://docs.docker.com/engine/install/)
+    - [linux post-installation](https://docs.docker.com/engine/install/linux-postinstall/)
 
-## Add your files
+2. 下載這個 Github 儲存庫。
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+    ```shell
+    git clone https://github.com/ycpss91255/docker_template
+    ```
 
-```
-cd existing_repo
-git remote add origin https://gitlab.usuntek.com/ron/ros2_humble_docker.git
-git branch -M main
-git push -uf origin main
-```
+3. 複製到你的專案目錄中。
 
-## Integrate with your tools
+    - `<workspace_path>`: 替換為真實的專案資料夾位置。
 
-- [ ] [Set up project integrations](https://gitlab.usuntek.com/ron/ros2_humble_docker/-/settings/integrations)
+        ```shell
+        cp -r docker_template <workspace_path>
+        # or
+        cp -r docker_template <workspace_path>/docker
+        ```
 
-## Collaborate with your team
+    - 例如:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+        ```shell
+        # ROS format workspace
+        cp -r docker_template ~/test_ws/src
+        ```
 
-## Test and Deploy
+4. 調整 Dockerfile 以符合你的需求。
+5. 建構 Docker image (執行 `build.sh`)。
+    - `<docker_path>`: 替換為真實的 docker 資料夾位置。
 
-Use the built-in continuous integration in GitLab.
+    ```shell
+    ./<docker_path>/build.sh
+    ```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+6. 執行 Docker container (執行 `run.sh`)。
+    - `<docker_path>`: 替換為真實的 docker 資料夾位置。
 
-***
+    ```shell
+    ./<docker_path>/run.sh
+    ```
 
-# Editing this README
+7. 享受 Docker 支援。
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### 使用時需要注意以下幾點
 
-## Suggestions for a good README
+1. Docker image 名稱會使用以下的順序進行命名：
+    - Docker 資料夾名稱 (後綴)，例如：**Docker_resistor**，image 名稱就是 **resistor**。
+    - 工作區資料夾名稱 (前綴)，例如：**capacitor_ws**，image 名稱就是 **capacitor**。
+    - 以上都沒有，image 名稱為 **unknown**。
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+2. Docker container 名稱會以 `<user>/<container>` 的格式並且搭配以下順序進行命名：
+    - `<user>`：
+        - Docker 登入的使用者名稱。
+        - 系統的使用者名稱。
+        - 以上都沒有，`<user>` 名稱就是 **initial**。
+    - `<container>`：
+        - 工作區資料夾名稱 (前綴)，例如：**inductor_ws**，container 名稱就是 **inductor**。
+        - Docker 資料夾名稱 (後綴)，例如：**Docker_antennas**，container 名稱就是 **antennas**。
+        - 以上都沒有，container 名稱為 **unknown**。
 
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+3. Dockerfile 與 entrypoint.sh 注意事項：
+    - 可允許增加硬體系統架構作為檔案名稱的後綴。
+        - 例如：**Dockerfile_x86_64** 或 **Dockerfile_aarch64**。
+        - 例如：**entrypoint_x86_64.sh** 或 **entrypoint_arrch64.sh**。
+    - 如果在 docker 資料夾底下有多個 Dockerfile 或 entrypoint.sh 會使用與當前電腦系統架構相同檔案。
