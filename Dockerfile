@@ -117,6 +117,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-tk \
     # install udev for reload rules
     udev \
+    # gazebo classic
+    ros-humble-gazebo* \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists
 
