@@ -111,45 +111,6 @@ RUN apt update \
 
 RUN ./config/pip/pip_setup.sh
 
-## Install packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    # install matplot
-    python3-tk \
-    # install udev for reload rules
-    udev \
-    # gazebo classic
-    ros-humble-gazebo* \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
-
-
-# driver
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ## IMU
-    # IMU bno055 usb stick & IMU hipnuc ch100 imu
-    ros-humble-nmea-msgs ros-humble-mavros-msgs \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
-
-# tool
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    # tf2_viewer
-    ros-humble-tf2-tools \
-    # for saving log \
-    libgoogle-glog-dev \
-    # for robot-controller pkg
-    # ros-humble-urdf-geometry-parser \
-    # for using twist_mux
-    # ros2-humble-twist-mux \
-    # install twist-keyboard for control forklift in gazebo
-    ros-humble-teleop-twist-keyboard \
-    # # install joystick driver
-    ros-humble-joy ros-humble-teleop-twist-joy \
-    # add rule file for udev permission
-    && mkdir -p /etc/udev/rules.d \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
-
 # ceres
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # CMake
@@ -167,7 +128,51 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists
 
+# driver
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ## IMU
+    # IMU bno055 usb stick & IMU hipnuc ch100 imu
+    ros-humble-nmea-msgs ros-humble-mavros-msgs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists
 
+## Install packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # install matplot
+    python3-tk \
+    # install udev for reload rules
+    udev \
+    # gazebo classic
+    ros-humble-gazebo* \
+    # sound dependency for gazebo
+    alsa-utils \
+    # install joint state publisher
+    ros-humble-joint-state-publisher \
+    # install joint state publisher gui
+    ros-humble-joint-state-publisher-gui \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists
+
+# tool
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # tf2_viewer
+    ros-humble-tf2-tools \
+    # for saving log \
+    libgoogle-glog-dev \
+    # for robot-controller pkg
+    # ros-humble-urdf-geometry-parser \
+    # for using twist_mux
+    # ros2-humble-twist-mux \
+    # install twist-keyboard for control forklift in gazebo
+    ros-humble-teleop-twist-keyboard \
+    # install joystick driver
+    ros-humble-joy ros-humble-teleop-twist-joy \
+    # install rviz plugins
+    ros-humble-rviz-default-plugins \
+    # add rule file for udev permission
+    && mkdir -p /etc/udev/rules.d \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists
 
 # RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
 # RUN sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u
@@ -233,7 +238,10 @@ RUN ./config/shell/bash_setup.sh "${USER}" "${GROUP}" \
 RUN export CXX=g++
 RUN export MAKEFLAGS="-j nproc"
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+RUN echo "source /usr/share/gazebo/setup.bash" >> ~/.bashrc
 RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
+RUN echo "export FORKLIFT_MODEL=\"linde_r16\""  >> ~/.bashrc
+
 
 # * Switch workspace to ~/work
 RUN sudo mkdir -p /home/"${USER}"/work
