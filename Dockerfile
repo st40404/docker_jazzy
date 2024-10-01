@@ -144,12 +144,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     udev \
     # gazebo classic
     ros-humble-gazebo* \
+    ros-humble-gazebo-ros2-control \
     # sound dependency for gazebo
     alsa-utils \
     # install joint state publisher
     ros-humble-joint-state-publisher \
     # install joint state publisher gui
-    ros-humble-joint-state-publisher-gui \
+    # ros-humble-joint-state-publisher-gui \
+    # install rqt for controller manage
+    ros-humble-rqt* \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists
 
@@ -162,9 +165,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # for robot-controller pkg
     # ros-humble-urdf-geometry-parser \
     # for using twist_mux
-    # ros2-humble-twist-mux \
+    ros-humble-twist-mux \
     # install twist-keyboard for control forklift in gazebo
     ros-humble-teleop-twist-keyboard \
+    xterm \
     # install joystick driver
     ros-humble-joy ros-humble-teleop-twist-joy \
     # install rviz plugins
@@ -238,14 +242,16 @@ RUN ./config/shell/bash_setup.sh "${USER}" "${GROUP}" \
 RUN export CXX=g++
 RUN export MAKEFLAGS="-j nproc"
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
-RUN echo "source /usr/share/gazebo/setup.bash" >> ~/.bashrc
 RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
 RUN echo "export FORKLIFT_MODEL=\"linde_r16\""  >> ~/.bashrc
+RUN echo "source /usr/share/gazebo/setup.bash" >> ~/.bashrc
+RUN echo "export TURTLEBOT3_MODEL=burger"  >> ~/.bashrc
 
 
 # * Switch workspace to ~/work
 RUN sudo mkdir -p /home/"${USER}"/work
 WORKDIR /home/"${USER}"/work
+RUN echo "source ~/work/install/setup.bash"  >> ~/.bashrc
 
 # * Make SSH available
 EXPOSE 22
