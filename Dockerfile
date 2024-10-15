@@ -106,7 +106,7 @@ RUN apt update \
 #   ros-humble-librealsense2* \
 #   ros-humble-diagnostic-updater \
 #   && apt-get clean \
-#   && rm -rf /var/lib/apt/lists  
+#   && rm -rf /var/lib/apt/lists
 
 
 RUN ./config/pip/pip_setup.sh
