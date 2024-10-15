@@ -9,3 +9,4 @@ pip install --upgrade --force-reinstall pip \
 
 # install PS4 driver
 pip3 install ds4drv
+pip3 install numpy

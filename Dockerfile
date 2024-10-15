@@ -25,9 +25,9 @@ RUN groupadd --gid "${GID}" "${GROUP}" \
 
 # * Replace apt urls
 # ? Change to tku
-RUN sed -i 's@archive.ubuntu.com@ftp.tku.edu.tw@g' /etc/apt/sources.list
+# RUN sed -i 's@archive.ubuntu.com@ftp.tku.edu.tw@g' /etc/apt/sources.list
 # ? Change to Taiwan
-# RUN sed -i 's@archive.ubuntu.com@tw.archive.ubuntu.com@g' /etc/apt/sources.list
+RUN sed -i 's@archive.ubuntu.com@tw.archive.ubuntu.com@g' /etc/apt/sources.list
 
 # * Time zone
 ENV TZ=Asia/Taipei
