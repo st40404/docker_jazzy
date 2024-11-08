@@ -150,7 +150,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # install joint state publisher
     ros-humble-joint-state-publisher \
     # install joint state publisher gui
-    # ros-humble-joint-state-publisher-gui \
+    ros-humble-joint-state-publisher-gui \
     # install rqt for controller manage
     ros-humble-rqt* \
     && apt-get clean \
@@ -178,27 +178,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists
 
-# turtlebot3
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-humble-turtlebot3-msgs
-# cartographer
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-humble-navigation2 \
-    ros-humble-cartographer \
-    ros-humble-cartographer-ros-msgs
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libabsl-dev \
-    libpcl-dev \
-    python3-sphinx
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libboost-iostreams-dev \
-    libcairo2-dev \
-    libceres-dev \
-    lua5.2-dev \
-    protobuf-*
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
 # RUN sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u
 # RUN apt update && apt install -y --no-install-recommends \
@@ -255,6 +234,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 ############################## USER CONFIG ####################################
 # * Switch user to ${USER}
 USER ${USER}
+
 RUN ./config/shell/bash_setup.sh "${USER}" "${GROUP}" \
     && ./config/shell/terminator/terminator_setup.sh "${USER}" "${GROUP}" \
     && ./config/shell/tmux/tmux_setup.sh "${USER}" "${GROUP}" \
@@ -269,11 +249,9 @@ RUN echo "export TURTLEBOT3_MODEL=burger"  >> ~/.bashrc
 
 
 # * Switch workspace to ~/work
-RUN sudo mkdir -p /home/"${USER}"/work
-WORKDIR /home/"${USER}"/work/ws
-RUN echo "source ~/work/ws/install/setup.bash"  >> ~/.bashrc
-RUN echo "source ~/work/usun_slam_core/install/setup.bash"  >> ~/.bashrc
-WORKDIR /home/"${USER}"/work/ws
+WORKDIR /home/"${USER}"/work
+RUN echo "source ~/work/install/setup.bash"  >> ~/.bashrc
+
 # * Make SSH available
 EXPOSE 22
 
