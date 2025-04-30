@@ -1,4 +1,4 @@
-FROM osrf/ros:humble-desktop-full
+FROM osrf/ros:jazzy-desktop-full
 ############################## SYSTEM PARAMETERS ##############################
 # * Arguments
 ARG USER=initial
@@ -9,10 +9,8 @@ ARG SHELL=/bin/bash
 ARG HARDWARE=x86_64
 ARG ENTRYPOINT_FILE=entrypint.sh
 
-# * Env vars for the nvidia-container-runtime.
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES all
-# ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 
 # * Setup users and groups
 RUN groupadd --gid "${GID}" "${GROUP}" \
@@ -24,8 +22,6 @@ RUN groupadd --gid "${GID}" "${GROUP}" \
     && chmod 0440 "/etc/sudoers.d/${USER}"
 
 # * Replace apt urls
-# ? Change to tku
-# RUN sed -i 's@archive.ubuntu.com@ftp.tku.edu.tw@g' /etc/apt/sources.list
 # ? Change to Taiwan
 RUN sed -i 's@archive.ubuntu.com@tw.archive.ubuntu.com@g' /etc/apt/sources.list
 
@@ -37,12 +33,6 @@ RUN ln -snf /usr/share/zoneinfo/"${TZ}" /etc/localtime && echo "${TZ}" > /etc/ti
 # ? Requires docker version >= 17.09
 COPY --chmod=0775 ./${ENTRYPOINT_FILE} /entrypoint.sh
 COPY --chown="${USER}":"${GROUP}" --chmod=0775 config config
-# ? docker version < 17.09
-# COPY ./${ENTRYPOINT_FILE} /entrypoint.sh
-# COPY config config
-# RUN sudo chmod 0775 /entrypoint.sh && \
-    # sudo chown -R "${USER}":"${GROUP}" config \
-    # && sudo chmod -R 0775 config
 
 ############################### INSTALL #######################################
 # * Install packages
@@ -67,191 +57,40 @@ RUN apt update \
         python3-colcon-common-extensions \
         software-properties-common \
         lsb-release \
-        ros-humble-rmw-cyclonedds-cpp \
         # Editing tools
         nano vim gedit \
         gnome-terminal libcanberra-gtk-module libcanberra-gtk3-module \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
-# gnome-terminal libcanberra-gtk-module libcanberra-gtk3-module \
-# dbus-x11 libglvnd0 libgl1 libglx0 libegl1 libxext6 libx11-6 \
-# display dep
-# libnss3 libgbm1 libxshmfence1 libdrm2 libx11-xcb1 libxcb-*-dev
 
-# ENV DEBIAN_FRONTEND=noninteractive
-# RUN sudo add-apt-repository universe
-# RUN sudo apt update
-# RUN sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg
-# # RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
-# RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
-# RUN sudo apt update
-# # RUN sudo  apt install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" keyboard-configuration
-# RUN sudo DEBIAN_FRONTEND=noninteractive apt install -y ros-galactic-desktop
-# #ROS2 Cyclone DDS
-# RUN sudo apt install -y ros-humble-rmw-cyclonedds-cpp
-# #colcon depend
-# RUN sudo apt install -y python3-colcon-common-extensions
-
-
-# RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
-# RUN sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u
-
-# RUN apt update && apt install -y --no-install-recommends \
-# #   #Realsense SDK depend
-# #   librealsense2-dkms \
-# #   librealsense2-utils \
-# #   librealsense2-dev \
-# #   librealsense2-dbg \
-#   ros-humble-librealsense2* \
-#   ros-humble-diagnostic-updater \
-#   && apt-get clean \
-#   && rm -rf /var/lib/apt/lists
-
-
-RUN ./config/pip/pip_setup.sh
-
-# ceres
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    # CMake
-    cmake \
-    # google-glog + gflags
-    libgoogle-glog-dev libgflags-dev \
-    # BLAS & LAPACK
-    libatlas-base-dev \
-    # Eigen3
-    libeigen3-dev \
-    # SuiteSparse and CXSparse (optional)
-    libsuitesparse-dev \
-    # add the following PPA:
-    # && add-apt-repository ppa:bzindovic/suitesparse-bugfix-1319687 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
-
-# driver
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ## IMU
-    # IMU bno055 usb stick & IMU hipnuc ch100 imu
-    ros-humble-nmea-msgs ros-humble-mavros-msgs \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
-
-## Install packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    # install matplot
-    python3-tk \
-    # install udev for reload rules
-    udev \
-    # gazebo classic
-    ros-humble-gazebo* \
-    ros-humble-gazebo-ros2-control \
-    # sound dependency for gazebo
-    alsa-utils \
-    # install joint state publisher
-    ros-humble-joint-state-publisher \
-    # install joint state publisher gui
-    ros-humble-joint-state-publisher-gui \
-    # install rqt for controller manage
-    ros-humble-rqt* \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
-
-# tool
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    # tf2_viewer
-    ros-humble-tf2-tools \
-    # for saving log \
-    libgoogle-glog-dev \
-    # for robot-controller pkg
-    # ros-humble-urdf-geometry-parser \
-    # for using twist_mux
-    ros-humble-twist-mux \
-    # install twist-keyboard for control forklift in gazebo
-    ros-humble-teleop-twist-keyboard \
-    xterm \
-    # install joystick driver
-    ros-humble-joy ros-humble-teleop-twist-joy \
-    # install rviz plugins
-    ros-humble-rviz-default-plugins \
-    # add rule file for udev permission
-    && mkdir -p /etc/udev/rules.d \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
-
-# RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
-# RUN sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u
-# RUN apt update && apt install -y --no-install-recommends \
-# #   #Realsense SDK depend
-#     librealsense2-dkms \
-#     librealsense2-utils \
-#     librealsense2-dev \
-#     librealsense2-dbg \
-#     # ros-humble-librealsense2* \
-#     ros-humble-diagnostic-updater \
-#     ros-humble-moveit \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists 
-
-
-# #OMPL depend
-# RUN apt update && apt install -y --no-install-recommends \
-#     lsb-release \
-#     g++ \
-#     cmake \
-#     pkg-config \
-#     libboost-serialization-dev \
-#     libboost-filesystem-dev \
-#     libboost-system-dev \
-#     libboost-program-options-dev \
-#     libboost-test-dev \
-#     libeigen3-dev \
-#     libode-dev wget \
-#     libyaml-cpp-dev \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists 
-
-# RUN sudo pip3 install -vU https://github.com/CastXML/pygccxml/archive/develop.zip pyplusplus
-
-# RUN apt update && apt install -y --no-install-recommends \
-#     castxml \
-#     libboost-python-dev \
-#     libboost-numpy-dev \
-#     python3-numpy \
-#     pypy3 \
-#     python3-pyqt5.qtopengl \
-#     freeglut3-dev \
-#     libassimp-dev \
-#     python3-opengl \
-#     python3-flask \
-#     python3-celery \
-#     libccd-dev \
-#     libfcl-dev \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists 
-
-# RUN sudo pip3 install -vU PyOpenGL-accelerate
+# RUN ./config/pip/pip_setup.sh
 
 ############################## USER CONFIG ####################################
-# * Switch user to ${USER}
-USER ${USER}
+
 
 RUN ./config/shell/bash_setup.sh "${USER}" "${GROUP}" \
     && ./config/shell/terminator/terminator_setup.sh "${USER}" "${GROUP}" \
     && ./config/shell/tmux/tmux_setup.sh "${USER}" "${GROUP}" \
     && sudo rm -rf /config
-RUN export CXX=g++
-RUN export MAKEFLAGS="-j nproc"
-RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
-RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
-RUN echo "export FORKLIFT_MODEL=\"linde_r16\""  >> ~/.bashrc
-RUN echo "source /usr/share/gazebo/setup.bash" >> ~/.bashrc
-RUN echo "export TURTLEBOT3_MODEL=burger"  >> ~/.bashrc
+
+RUN echo 'export CXX=g++' >> ~/.bashrc \
+    && echo 'export MAKEFLAGS="-j$(nproc)"' >> ~/.bashrc \
+    && echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc \
+    && echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc \
+    && echo "source ~/work/install/setup.bash" >> ~/.bashrc
+# RUN export CXX=g++
+# RUN export MAKEFLAGS="-j nproc"
+# RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+# RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
 
 
 # * Switch workspace to ~/work
 WORKDIR /home/"${USER}"/work
 RUN echo "source ~/work/install/setup.bash"  >> ~/.bashrc
 
+# * Switch user to ${USER}
+USER ${USER}
 # * Make SSH available
 EXPOSE 22
 
