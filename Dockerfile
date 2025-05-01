@@ -1,25 +1,30 @@
 FROM osrf/ros:jazzy-desktop-full
+SHELL ["/bin/bash", "-c"]
+
 ############################## SYSTEM PARAMETERS ##############################
 # * Arguments
 ARG USER=initial
 ARG GROUP=initial
-ARG UID=1000
+ARG UID=ron
 ARG GID="${UID}"
 ARG SHELL=/bin/bash
 ARG HARDWARE=x86_64
 ARG ENTRYPOINT_FILE=entrypint.sh
 
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES all
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=all
 
 # * Setup users and groups
-RUN groupadd --gid "${GID}" "${GROUP}" \
-    && useradd --gid "${GID}" --uid "${UID}" -ms "${SHELL}" "${USER}" \
-    && mkdir -p /etc/sudoers.d \
-    && echo "${USER}:x:${UID}:${UID}:${USER},,,:/home/${USER}:${SHELL}" >> /etc/passwd \
-    && echo "${USER}:x:${UID}:" >> /etc/group \
-    && echo "${USER} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${USER}" \
-    && chmod 0440 "/etc/sudoers.d/${USER}"
+    RUN set -eux; \
+    if ! getent group "${GROUP}" >/dev/null; then \
+        groupadd "${GROUP}"; \
+    fi; \
+    if ! id -u "${USER}" >/dev/null 2>&1; then \
+        useradd -ms "${SHELL}" -g "${GROUP}" "${USER}"; \
+    fi; \
+    mkdir -p /etc/sudoers.d; \
+    echo "${USER} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${USER}"; \
+    chmod 0440 "/etc/sudoers.d/${USER}"
 
 # * Replace apt urls
 # ? Change to Taiwan
@@ -48,26 +53,29 @@ RUN apt update \
         # * base tools
         tmux \
         terminator \
-        # * Work tools
-        udev \
-        libtool \
+        # * pip
         python3-pip \
         python3-dev \
         python3-setuptools \
         python3-colcon-common-extensions \
-        software-properties-common \
-        lsb-release \
         # Editing tools
         nano vim gedit \
         gnome-terminal libcanberra-gtk-module libcanberra-gtk3-module \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt update \
+    && apt install -y --no-install-recommends \
+        # pip setup
+        python3-venv \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# RUN ./config/pip/pip_setup.sh
+RUN ./config/pip/pip_setup.sh
 
 ############################## USER CONFIG ####################################
-
+# * Switch user to ${USER}
+USER ${USER}
 
 RUN ./config/shell/bash_setup.sh "${USER}" "${GROUP}" \
     && ./config/shell/terminator/terminator_setup.sh "${USER}" "${GROUP}" \
@@ -79,18 +87,11 @@ RUN echo 'export CXX=g++' >> ~/.bashrc \
     && echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc \
     && echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc \
     && echo "source ~/work/install/setup.bash" >> ~/.bashrc
-# RUN export CXX=g++
-# RUN export MAKEFLAGS="-j nproc"
-# RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
-# RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
-
 
 # * Switch workspace to ~/work
 WORKDIR /home/"${USER}"/work
 RUN echo "source ~/work/install/setup.bash"  >> ~/.bashrc
 
-# * Switch user to ${USER}
-USER ${USER}
 # * Make SSH available
 EXPOSE 22
 

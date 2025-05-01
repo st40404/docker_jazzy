@@ -1,5 +1,5 @@
 # install python dep
-pyrealsense2
+# pyrealsense2
 tf
 numpy-quaternion
 # install some pip packages needed for testing
@@ -15,7 +15,7 @@ numpy-quaternion
 # pytest-repeat 
 # pytest-rerunfailures 
 # pytest
-#autolab_core dependent
+# autolab_core dependent
 # ruamel-yaml
 # scikit-learn
 # colorlog
@@ -23,7 +23,7 @@ numpy-quaternion
 # setproctitle
 # scikit-image
 # visualization
-#gqcnn dependent
+# gqcnn dependent
 # tensorflow-gpu==2.8.1
 # protobuf==3.20
 # future
