@@ -68,6 +68,10 @@ RUN apt update \
     && apt install -y --no-install-recommends \
         # pip setup
         python3-venv \
+        python3-gi \
+        gir1.2-keybinder-3.0 \
+        gir1.2-gtk-3.0 \
+        gir1.2-notify-0.7 \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -84,7 +88,7 @@ RUN ./config/shell/bash_setup.sh "${USER}" "${GROUP}" \
 
 RUN echo 'export CXX=g++' >> ~/.bashrc \
     && echo 'export MAKEFLAGS="-j$(nproc)"' >> ~/.bashrc \
-    && echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc \
+    && echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc \
     && echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc \
     && echo "source ~/work/install/setup.bash" >> ~/.bashrc
 

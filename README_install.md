@@ -103,3 +103,17 @@ sudo systemctl restart docker
 
 sudo docker run --rm --gpus all nvidia/cuda:11.0.3-basenv.04 nvidia-smi
 ############### test finish ##################
+
+##############################################
+################### DEBUG ####################
+##############################################
+1. error code
+
+Authorization required, but no authorization protocol specified
+
+Authorization required, but no authorization protocol specified
+
+You need to run terminator in an X environment. Make sure $DISPLAY is properly set
+
+====== DEBUG ======
+xhost +local:docker
